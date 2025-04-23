@@ -9,6 +9,7 @@ model configuration thereof. A given VLA model (`policy`) configures the followi
     - Training / Optimization Hyperparameters
 """
 
+import os
 from dataclasses import dataclass
 from enum import Enum, unique
 from pathlib import Path
@@ -78,9 +79,9 @@ class Exp_SigLIP_224px_Bridge(VLAConfig):
     epochs: int = 1000
     max_steps: Optional[int] = None
 
-    expected_world_size: int = 8
-    global_batch_size: int = 256
-    per_device_batch_size: int = 32
+    expected_world_size: int = int(os.environ.get("WORLD_SIZE", 8))
+    per_device_batch_size: int = int(os.environ.get("PER_DEVICE_BATCH_SIZE", 32))
+    global_batch_size: int = expected_world_size * per_device_batch_size
 
     learning_rate: float = 2e-5
     weight_decay: float = 0.0
@@ -88,7 +89,7 @@ class Exp_SigLIP_224px_Bridge(VLAConfig):
     lr_scheduler_type: str = "constant"
     warmup_ratio: float = 0.0
 
-    train_strategy: str = "fsdp-full-shard"
+    train_strategy: str = os.environ.get("TRAIN_STRATEGY", "fsdp-full-shard")
 
 
 # = [8 GPU] SigLIP 224px Frozen Vision Backbone + Bridge =
