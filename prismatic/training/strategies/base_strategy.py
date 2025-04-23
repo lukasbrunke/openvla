@@ -268,7 +268,7 @@ class TrainingStrategy(ABC):
         # === Train ===
         status = metrics.get_status()
         with tqdm(
-            total=(self.epochs * len(dataloader)) if self.max_steps is None else self.max_steps,
+            total=(self.epochs * len(vla_dataset) // self.global_batch_size) if self.max_steps is None else self.max_steps,
             desc=status,
             leave=False,
             disable=not overwatch.is_rank_zero(),
